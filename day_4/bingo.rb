@@ -97,14 +97,21 @@ def call_boards_and_return_winners(lines)
   winning_boards
 end
 
-def find_winning_board(winning_boards)
-  winning_board = winning_boards.min_by(&:winning_index)
-  uncalled_numbers_sum = winning_board.sum_uncalled_numbers
-  winning_number = winning_board.winning_number
+def print_board_stat(board)
+  uncalled_numbers_sum = board.sum_uncalled_numbers
+  winning_number = board.winning_number
   result = winning_number * uncalled_numbers_sum
-  puts "Winning Num: #{winning_number}, Board Sum: #{uncalled_numbers_sum}, Mult: #{result}"
 
-  result
+  puts "Winning Num: #{winning_number}, Board Sum: #{uncalled_numbers_sum}, Mult: #{result}"
+end
+
+def find_winning_board(winning_boards)
+  winning_boards = winning_boards.sort_by(&:winning_index)
+  winning_board = winning_boards.first
+  losing_board = winning_boards.last
+
+  print_board_stat(winning_board)
+  print_board_stat(losing_board)
 end
 
 def play_bingo
