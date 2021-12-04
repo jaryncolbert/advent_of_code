@@ -9,6 +9,10 @@ class BoardNumber
     @col = col
     @called = false
   end
+
+  def to_s
+    number.to_s
+  end
 end
 
 class Board
@@ -23,6 +27,14 @@ class Board
     init_board(rows)
   end
 
+  def to_s
+    winner_message = @winning_number ? "Winner with #{winning_number} at #{winning_index}" : ''
+    called_number_str = called_numbers.map(&:to_s)
+    uncalled_number_str = uncalled_numbers.map(&:to_s)
+
+    "#{winner_message}\nCalled: #{called_number_str}\nUncalled:  #{uncalled_number_str}"
+  end
+
   def init_board(rows)
     rows.each_with_index do |row, row_index|
       row.split(/ +/).each_with_index do |number, col_index|
@@ -35,6 +47,8 @@ class Board
   def call_number(number, index)
     # puts "Call #{number} at i #{index}"
     board_number = @board_numbers[number]
+    return if board_number.nil?
+
     board_number.called = true
 
     @called_rows[board_number.row] = [] if @called_rows[board_number.row].nil?
@@ -47,8 +61,18 @@ class Board
     @winning_index = index
   end
 
-  def sum_uncalled_nums
-    @board_numbers.values.reject(&:called).sum(&:number)
+  def sum_uncalled_numbers
+    uncalled_numbers.sum(&:number)
+  end
+
+  private
+
+  def called_numbers
+    @board_numbers.values.select(&:called).sort_by(&:number)
+  end
+
+  def uncalled_numbers
+    @board_numbers.values.reject(&:called).sort_by(&:number)
   end
 end
 
@@ -70,12 +94,14 @@ def call_boards_and_return_winners(lines)
     end
   end
 
+  puts winning_boards
+
   winning_boards
 end
 
 def find_winning_board(winning_boards)
   winning_board = winning_boards.min_by(&:winning_index)
-  uncalled_numbers_sum = winning_board.sum_uncalled_nums
+  uncalled_numbers_sum = winning_board.sum_uncalled_numbers
   winning_number = winning_board.winning_number
   result = winning_number * uncalled_numbers_sum
   puts "Winning Num: #{winning_number}, Board Sum: #{uncalled_numbers_sum}, Mult: #{result}"
@@ -90,3 +116,5 @@ def play_bingo
 end
 
 play_bingo
+
+# 35217 too high
