@@ -19,9 +19,9 @@ class Board
   attr_accessor :winning_number, :winning_index
 
   def initialize(rows)
-    @board_numbers = {}
-    @called_rows = {}
-    @called_cols = {}
+    @board_numbers = Hash.new { |h, k| h[k] = [] }
+    @called_rows =  Hash.new { |h, k| h[k] = [] }
+    @called_cols =  Hash.new { |h, k| h[k] = [] }
     @winning_number = nil
     @winning_index = nil
     init_board(rows)
@@ -46,13 +46,11 @@ class Board
 
   def call_number(number, index)
     # puts "Call #{number} at i #{index}"
-    board_number = @board_numbers[number]
-    return if board_number.nil?
+    return unless @board_numbers.key?(number)
 
+    board_number = @board_numbers[number]
     board_number.called = true
 
-    @called_rows[board_number.row] = [] if @called_rows[board_number.row].nil?
-    @called_cols[board_number.col] = [] if @called_cols[board_number.col].nil?
     @called_rows[board_number.row] << board_number.number
     @called_cols[board_number.col] << board_number.number
 
