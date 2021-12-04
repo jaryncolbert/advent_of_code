@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-def process
+def bingo
 
 end
 
 lines = File.readlines("test.txt").map(&:chomp)
-process(lines)
+bingo(lines)
