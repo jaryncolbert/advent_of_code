@@ -37,7 +37,7 @@ class Board
 
   def init_board(rows)
     rows.each_with_index do |row, row_index|
-      row.split(/ +/).each_with_index do |number, col_index|
+      row.split(' ').each_with_index do |number, col_index|
         number = number.chomp.to_i
         @board_numbers[number] = BoardNumber.new(number, row_index, col_index)
       end
@@ -55,7 +55,9 @@ class Board
     @called_cols[board_number.col] << board_number.number
 
     # puts "Called rows #{@called_rows}, called cols #{@called_cols}"
-    @winning_number = number if @called_rows[board_number.row].length == 5 || @called_cols[board_number.col].length == 5
+    return unless @called_rows[board_number.row].length == 5 || @called_cols[board_number.col].length == 5
+
+    @winning_number = number
     @winning_index = index
   end
 
@@ -66,11 +68,11 @@ class Board
   private
 
   def called_numbers
-    @board_numbers.values.select(&:called).sort_by(&:number)
+    @board_numbers.values.select(&:called)
   end
 
   def uncalled_numbers
-    @board_numbers.values.reject(&:called).sort_by(&:number)
+    @board_numbers.values.reject(&:called)
   end
 end
 
@@ -85,14 +87,12 @@ def call_boards_and_return_winners(lines)
     called_numbers.each_with_index do |number, call_index|
       board.call_number(number.to_i, call_index)
 
-      if board.winning_number
+      unless board.winning_number.nil?
         winning_boards << board
         break
       end
     end
   end
-
-  puts winning_boards
 
   winning_boards
 end
@@ -108,7 +108,7 @@ def find_winning_board(winning_boards)
 end
 
 def play_bingo
-  lines = File.readlines("test.txt").map(&:chomp)
+  lines = File.readlines("input.txt").map(&:chomp)
   winning_boards = call_boards_and_return_winners(lines)
   find_winning_board(winning_boards)
 end
