@@ -14,6 +14,23 @@ class Coordinate
   end
 end
 
+def increment_overlap_counter(x_value, y_value, rows)
+  # puts "X: #{x_value}, Y: #{y_value}"
+  rows[x_value][y_value] = Coordinate.new(x_value, y_value) if rows[x_value][y_value].nil?
+
+  # puts "Lookup coord: #{rows[x_value][y_value]}"
+  rows[x_value][y_value].num_overlapping += 1
+end
+
+def count_overlapping(rows)
+  coordinate_array = rows.values.map(&:values).flatten
+  num_overlapping = coordinate_array.count do |coordinate|
+    coordinate.num_overlapping >= 2
+  end
+
+  puts "Overlapping: #{num_overlapping}"
+end
+
 def find_overlapping_lines(lines)
   rows = Hash.new { |h, k| h[k] = {} }
 
@@ -24,21 +41,13 @@ def find_overlapping_lines(lines)
     if x1 == x2
       min_y, max_y = [y1, y2].minmax
       (min_y..max_y).to_a.each do |y_value|
-        # puts "X: #{x1}, Y: #{y_value}"
-        rows[x1][y_value] = Coordinate.new(x1, y_value) if rows[x1][y_value].nil?
-
-        # puts "Lookup coord: #{rows[x1][y_value]}"
-        rows[x1][y_value].num_overlapping += 1
+        increment_overlap_counter(x1, y_value, rows)
       end
 
     elsif y1 == y2
       min_x, max_x = [x1, x2].minmax
       (min_x..max_x).to_a.each do |x_value|
-        # puts "X: #{x_value}, Y: #{y1}"
-        rows[x_value][y1] = Coordinate.new(x_value, y1) if rows[x_value][y1].nil?
-
-        # puts "Lookup coord: #{rows[x_value][y1]}"
-        rows[x_value][y1].num_overlapping += 1
+        increment_overlap_counter(x_value, y1, rows)
       end
 
     else
@@ -51,22 +60,12 @@ def find_overlapping_lines(lines)
 
       # puts "X Range: (#{(min_coord_by_x[0]..max_coord_by_x[0]).to_a}), Y Range: (#{y_range})"
       (min_coord_by_x[0]..max_coord_by_x[0]).to_a.each_with_index do |x_value, index|
-        y_value = y_range[index]
-        # puts "X: #{x_value}, Y: #{y_value}"
-        rows[x_value][y_value] = Coordinate.new(x_value, y_value) if rows[x_value][y_value].nil?
-
-        # puts "Lookup coord: #{rows[x_value][y_value]}"
-        rows[x_value][y_value].num_overlapping += 1
+        increment_overlap_counter(x_value, y_range[index], rows)
       end
     end
   end
 
-  coordinate_array = rows.values.map(&:values).flatten
-  num_overlapping = coordinate_array.count do |coordinate|
-    coordinate.num_overlapping >= 2
-  end
-
-  puts "Overlapping: #{num_overlapping}"
+  count_overlapping(rows)
 end
 
 lines = File.readlines("input.txt").map(&:chomp)
