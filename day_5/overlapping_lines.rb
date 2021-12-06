@@ -40,6 +40,24 @@ def find_overlapping_lines(lines)
         # puts "Lookup coord: #{rows[x_value][y1]}"
         rows[x_value][y1].num_overlapping += 1
       end
+
+    else
+      # puts "Line: #{line}, Coord1 (#{x1}, #{y1}), Coord2 (#{x2}, #{y2})"
+      min_coord_by_x, max_coord_by_x = x1 < x2 ? [[x1, y1], [x2, y2]] : [[x2, y2], [x1, y1]]
+      min_y, max_y = [y1, y2].minmax
+      # puts "min_coord_by_x #{min_coord_by_x}, max_coord_by_x #{max_coord_by_x}"
+      y_range = (min_y..max_y).to_a
+      y_range.reverse! if min_coord_by_x[1] > max_coord_by_x[1]
+
+      # puts "X Range: (#{(min_coord_by_x[0]..max_coord_by_x[0]).to_a}), Y Range: (#{y_range})"
+      (min_coord_by_x[0]..max_coord_by_x[0]).to_a.each_with_index do |x_value, index|
+        y_value = y_range[index]
+        # puts "X: #{x_value}, Y: #{y_value}"
+        rows[x_value][y_value] = Coordinate.new(x_value, y_value) if rows[x_value][y_value].nil?
+
+        # puts "Lookup coord: #{rows[x_value][y_value]}"
+        rows[x_value][y_value].num_overlapping += 1
+      end
     end
   end
 
