@@ -27,6 +27,8 @@ def min_among_neighbors(x_index, lines)
   top, bottom = get_top(x_index, lines).to_i, get_bottom(x_index, lines).to_i
   left, right = get_left(x_index, lines).to_i, get_right(x_index, lines).to_i
 
+  # puts "Value #{value}, Min? #{value < top && value < bottom && value < left && value < right}"
+
   value < top && value < bottom && value < left && value < right ? value : -1
 end
 
@@ -41,8 +43,11 @@ def height_map(lines)
 
   start_index = 0
   loop do
+    low_points_for_line = []
     group = lines.slice(start_index, 3)
     break if !group || group.empty?
+
+    # puts "Group at #{start_index}: #{group}"
 
     # Add "blank" line of 9s as last lines so we can always run compare fns on second input line
     if group.length == 2
@@ -55,11 +60,14 @@ def height_map(lines)
       height_if_min = min_among_neighbors(x_index, group)
 
       if height_if_min >= 0
-        low_points << height_if_min + 1
+        low_points_for_line << height_if_min + 1
         min_count += height_if_min + 1
       end
+
     end
 
+    low_points << low_points_for_line unless low_points_for_line.empty?
+    # p low_points_for_line unless low_points_for_line.empty?
     start_index += 1
   end
 
@@ -67,7 +75,7 @@ def height_map(lines)
   puts min_count
 end
 
-lines = File.readlines("test.txt").map(&:chomp).map { |line| line.split('') }
-height_map(lines.take(5))
+lines = File.readlines("input.txt").map { |line| line.chomp.split('') }
+height_map(lines)
 
 # 522 too high
