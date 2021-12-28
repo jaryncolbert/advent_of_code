@@ -46,8 +46,8 @@ def traverse_graph(start_node, visited_nodes)
   # puts "Traverse #{start_node.value}, Visited #{visited_nodes}"
   # puts "Returning 'end'" if start_node.value == 'end'
   if start_node.value == 'end'
-    p visited_nodes + [start_node.value]
-    return
+    # Add a terminating char to the end of the path to make splitting easier
+    return (visited_nodes + [start_node.value]).join(',') + '|'
   end
 
   neighbors = start_node.neighbors
@@ -56,18 +56,23 @@ def traverse_graph(start_node, visited_nodes)
   end
   # puts "Unvisited #{unvisited_neighbors}"
   return if unvisited_neighbors.empty?
-  
+
+  paths = ""
   unvisited_neighbors.each do |node|
     # puts "Traverse #{node.value} from #{start_node.value}"
-    traverse_graph(node, visited_nodes + [start_node.value])
+    path = traverse_graph(node, visited_nodes + [start_node.value])
+    paths += path if path
   end
+
+  paths
 end
 
 def find_possible_paths(lines)
   start_node = build_graph(lines)
-  traverse_graph(start_node, [])
+  paths = traverse_graph(start_node, [])
+  p paths.split('|').count
 end
 
 
-lines = File.readlines("test_1.txt").map(&:chomp)
+lines = File.readlines("input.txt").map(&:chomp)
 find_possible_paths(lines)
