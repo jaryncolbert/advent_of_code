@@ -35,7 +35,6 @@ def build_graph(lines)
     second_node.add_neighbor(first_node)
   end
 
-  p graph_nodes.values
   graph_nodes['start']
 end
 
@@ -44,23 +43,29 @@ def is_uppercase?(value)
 end
 
 def traverse_graph(start_node, visited_nodes)
-  return visited_nodes if start_node.value == 'end'
+  # puts "Traverse #{start_node.value}, Visited #{visited_nodes}"
+  # puts "Returning 'end'" if start_node.value == 'end'
+  if start_node.value == 'end'
+    p visited_nodes + [start_node.value]
+    return
+  end
 
   neighbors = start_node.neighbors
   unvisited_neighbors = neighbors.select do |node|
     is_uppercase?(node.value) || !visited_nodes.include?(node.value)
   end
-  return unvisited_neighbors if unvisited_neighbors.empty?
-
-  unvisited_neighbors.map do |node|
-    traverse_graph(node, visited_nodes << start_node)
+  # puts "Unvisited #{unvisited_neighbors}"
+  return if unvisited_neighbors.empty?
+  
+  unvisited_neighbors.each do |node|
+    # puts "Traverse #{node.value} from #{start_node.value}"
+    traverse_graph(node, visited_nodes + [start_node.value])
   end
-
 end
 
 def find_possible_paths(lines)
   start_node = build_graph(lines)
-  #p traverse_graph(start_node, [])
+  traverse_graph(start_node, [])
 end
 
 
